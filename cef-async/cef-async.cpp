@@ -103,10 +103,15 @@ private:
 };
 
 jsbind::persistent jsOnReceiveFunc;
+jsbind::persistent jsOnReceiveFuncAsync;
 
 void setReceiveFunc(jsbind::local func)
 {
     jsOnReceiveFunc.reset(func);
+}
+
+void setReceiveFuncAsync(jsbind::local func) {
+    jsOnReceiveFuncAsync.reset(func);
 }
 
 void echo(std::string text)
@@ -120,6 +125,7 @@ JSBIND_BINDINGS(App)
 {
     jsbind::function("echo", echo);
     jsbind::function("setReceiveFunc", setReceiveFunc);
+    jsbind::function("setReceiveFuncAsync", setReceiveFuncAsync);
 }
 
 class RendererApp : public CefApp, public CefRenderProcessHandler
@@ -141,6 +147,7 @@ public:
     {
         jsbind::enter_context();
         jsOnReceiveFunc.reset();
+        jsOnReceiveFuncAsync.reset();
         jsbind::exit_context();
         jsbind::deinitialize();
     }
@@ -154,12 +161,14 @@ public:
         {
             auto text = message->GetArgumentList()->GetString(0).ToString();
             jsbind::enter_context();
-            jsOnReceiveFunc.to_local()(text);
+            // jsOnReceiveFunc.to_local()(text);
+            jsOnReceiveFuncAsync.to_local()(text);
             jsbind::exit_context();
             return true;
         }
         return false;
     }
+
 private:
     IMPLEMENT_REFCOUNTING(RendererApp);
     DISALLOW_COPY_AND_ASSIGN(RendererApp);

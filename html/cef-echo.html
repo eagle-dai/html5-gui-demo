@@ -9,6 +9,7 @@ var ws;
 function init() {
     output = document.getElementById("output");
     Module.setReceiveFunc(onReceive);
+    Module.setReceiveFuncAsync(onReceiveAsync);
 }
 
 function writeToScreen(message) {
@@ -23,6 +24,11 @@ function writeToScreen(message) {
 }
 
 function onReceive(message) {
+    writeToScreen('<span style="color: blue;">RESPONSE: ' + message + '</span>');
+}
+
+async function onReceiveAsync(message) {
+    await new Promise((r) => setTimeout(r, 100));
     writeToScreen('<span style="color: blue;">RESPONSE: ' + message + '</span>');
 }
 
