@@ -162,7 +162,16 @@ public:
             auto text = message->GetArgumentList()->GetString(0).ToString();
             jsbind::enter_context();
             // jsOnReceiveFunc.to_local()(text);
-            jsOnReceiveFuncAsync.to_local()(text);
+            jsOnReceiveFuncAsync.to_local()(text,
+                "return ' | ' + testFun1();",
+                R"(
+                    let wait_ms = async function (ms) {
+                        await new Promise((r) => setTimeout(r, ms));
+                    };
+                    await wait_ms(100);
+                    return ' | async fun';
+                )"
+            );
             jsbind::exit_context();
             return true;
         }
@@ -232,3 +241,4 @@ int main(int argc, char* argv[])
 
     return 0;
 }
+
